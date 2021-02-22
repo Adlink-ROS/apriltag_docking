@@ -1,0 +1,14 @@
+autodock_controller:
+  ros__parameters:
+      cmd_vel_angular_rate: 0.20
+      cmd_vel_linear_rate: 0.20        
+      default_turn: 1.0                # default turn radian in search state 
+      final_approach_distance: 1.0     # range that make move speed decrease to half
+      finish_distance: 0.4             # final distanse between bot and dock when finish
+      jog_distance: 0.2                # default distanse to move foward
+      lost_tag_max: 5                  # max tag lost at search and approach
+      max_center_count: 10             # max tag lost at center state
+      tune_angle: 0.42                 # default angle between bot and dock
+      tag_frame: "dock_frame"          # tf name of tags, plz check frame name set in 'apriltag_ros', 
+                                       # they must be the same. 
+      blind_angle: 0.8
