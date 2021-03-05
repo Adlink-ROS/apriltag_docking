@@ -10,6 +10,7 @@ This repo shows the docking demo by leverging the AprilTag and NeuronBot2 with R
 mkdir -p autodock_ros2_ws/src
 cd ~/autodock_ros2_ws/
 wget https://raw.githubusercontent.com/Adlink-ROS/neuronbot2_ros2.repos/z_demo-apriltag/neuronbot2_ros2.repos
+vcs import src < neuronbot2_ros2.repos
 ```
 
 ## Install dependencies
