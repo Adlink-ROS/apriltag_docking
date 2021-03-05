@@ -1,27 +1,42 @@
 # apriltag_docking
 
-## Install
-```
+This repo shows the docking demo by leverging the AprilTag and NeuronBot2 with ROS 2 foxy-devel.
+
+![](readme_resource/apriltag_docking.gif)
+
+
+## Download packages
+```bash
 mkdir -p autodock_ros2_ws/src
-cd ~/autodock_ros2_ws/src
-git clone https://github.com/H-HChen/neuronbot2.git
-git clone https://github.com/H-HChen/apriltag_ros.git -b foxy-devel
-git clone https://github.com/AprilRobotics/apriltag.git
-git clone https://github.com/H-HChen/apriltag_docking.git 
-cd ..
-rosdep install --from-paths src --ignore-src -r -y
-colcon build --symlink-install    #ignore all warning plz 
+cd ~/autodock_ros2_ws/
+wget https://raw.githubusercontent.com/Adlink-ROS/neuronbot2_ros2.repos/z_demo-apriltag/neuronbot2_ros2.repos
+```
+
+## Install dependencies
+```bash
+cd ~/autodock_ros2_ws/
+rosdep update
+rosdep install --from-paths src --ignore-src -r -y --rosdistro foxy
+```
+
+## Build packages
+```bash
+cd ~/autodock_ros2_ws/
+source /opt/ros/foxy/setup.bash
+colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
 ``` 
 
-## Modify tag family, tag size and tag_ids
-```
+## AprilTag configurations
+If you want to change the settings of AprilTag, e.g. tag family, tag size and tag_ids, please check below yaml files:
+
+```bash
 cd ~/autodock_ros2_ws/
 vim src/apriltag_ros/apriltag_ros/cfg/tags_36h11_filter.yaml
 vim src/apriltag_docking/autodock_controller/param/neuronbot.yaml
 ```
-### tags_36h11_filter.yaml
-Set tags size and tag family and tag_frames
-```
+In ```tags_36h11_filter.yaml```, set tag **size**, tag **family**, and **tag_frames**.
+
+```yaml
 image_transport: 'raw'    # image format
 family: '36h11'           # tag family name
 size: 0.08
@@ -38,10 +53,9 @@ tag_ids: [0]            # tag ID
 tag_frames: [dock_frame]  # optional frame name
 tag_sizes: [0.08]   # optional tag-specific edge size
 ```
-### neuronbot.yaml
+Also check ```neuronbot.yaml```
 
-Set tag family and tad id
-```
+```yaml
 autodock_controller:
   ros__parameters:
       cmd_vel_angular_rate: 0.25
@@ -55,14 +69,33 @@ autodock_controller:
       tune_angle: 0.42
       tag_frame: "dock_frame"
 ```
-## Simulation in gazebo
-1. Launch Neuronbot2 and tag in gazebo
-```
+
+## Simulation in Gazebo
+
+Step 1. Launch Neuronbot2 and AprilTag model in Gazebo
+
+```bash
 ros2 launch neuronbot2_gazebo neuronbot2_world.launch.py world_model:=tag.model use_camera:=top
 ```
-2. Launch apriltag_docking 
 
-    Remember to change names of camera_namespace and topic name
+Step 2. Launch apriltag_docking
+
+```bash
+ros2 launch apriltag_docking autodock_gazebo.launch.py open_rviz:=true
 ```
-ros2 launch apriltag_docking autodock_gazebo.launch.py
+
+## Use Physical NeuronBot2 and RealSense D435
+
+Below instructions are only for users having a real NeuronBot2 with RealSense D435
+
+Step 1. Launch Neuronbot2 and RealSense in real world
+
+```bash
+ros2 launch neuronbot2_bringup bringup_launch.py use_camera:=top
+```
+
+Step 2. Launch apriltag_docking
+
+```bash
+ros2 launch apriltag_docking autodock_neuronbot.launch.py open_rviz:=true
 ```
