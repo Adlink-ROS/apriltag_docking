@@ -46,7 +46,7 @@ install(TARGETS ${EXECUTABLE_NAME}
   DESTINATION lib/${PROJECT_NAME})
 
 install(
-  DIRECTORY launch param 
+  DIRECTORY launch param rviz
   DESTINATION share/${PROJECT_NAME}
 )
 
