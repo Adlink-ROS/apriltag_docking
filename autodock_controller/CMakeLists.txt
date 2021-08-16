@@ -19,16 +19,17 @@ find_package(tf2_geometry_msgs REQUIRED)
 find_package(tf2  REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(sensor_msgs REQUIRED)
+find_package(autodock_msgs REQUIRED)
 
 
 include_directories(
   include include/
 )
 
-set(EXECUTABLE_NAME "controller")
-
-add_executable( ${EXECUTABLE_NAME} src/controller.cpp)
-
+set(CTRL_EXEC_NAME "controller")
+set(CLIENT_EXEC_NAME "docking_client")
+add_executable( ${CTRL_EXEC_NAME} src/controller.cpp src/service_state.cpp)
+add_executable( ${CLIENT_EXEC_NAME} src/service_client_node.cpp)
 
 set(DEPENDENCIES
   "rclcpp"           
@@ -38,15 +39,19 @@ set(DEPENDENCIES
   "tf2"
   "tf2_ros"
   "sensor_msgs"
+  "autodock_msgs"
 )
 
-ament_target_dependencies(controller ${DEPENDENCIES})
+ament_target_dependencies(${CTRL_EXEC_NAME} ${DEPENDENCIES})
+ament_target_dependencies(${CLIENT_EXEC_NAME} ${DEPENDENCIES})
 
-install(TARGETS ${EXECUTABLE_NAME}
+install(TARGETS ${CTRL_EXEC_NAME}
   DESTINATION lib/${PROJECT_NAME})
-
+install(TARGETS ${CLIENT_EXEC_NAME}
+  DESTINATION lib/${PROJECT_NAME})
+  
 install(
-  DIRECTORY launch param rviz
+  DIRECTORY launch param 
   DESTINATION share/${PROJECT_NAME}
 )
 

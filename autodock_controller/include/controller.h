@@ -12,10 +12,15 @@
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <tf2/utils.h>
 #include <geometry_msgs/msg/transform_stamped.hpp>
-
+#include "autodock_msgs/srv/docking.hpp"
+#include "autodock_msgs/msg/current_state.hpp"
 
 #define sign(A)  ( (A) >= 0 ? 1.0: -1.0 )
 #define _USE_MATH_DEFINES
+
+using std::placeholders::_1;
+using std::placeholders::_2;
+using std::placeholders::_3;
 
 namespace automatic_parking {
     class autodock_controller :public rclcpp::Node{
@@ -45,8 +50,11 @@ namespace automatic_parking {
                 this->get_parameter("blind_angle" , blind_angle);
                 this->declare_parameter<std::string>("tag_frame" ,"dock_frame");
                 this->get_parameter("tag_frame" , tag_frame);
-                
+
+                action_service = this->create_service<autodock_msgs::srv::Docking>(
+                    "autodock_controller/docking_service", std::bind(&autodock_controller::handle_service, this, _1, _2, _3));
                 vel_pub = this->create_publisher<geometry_msgs::msg::Twist>("cmd_vel", 20);
+                state_pub = this->create_publisher<autodock_msgs::msg::CurrentState>("autodock_controller/current_state", 20);
                 buffer_ = std::make_shared<tf2_ros::Buffer>(this->get_clock());
                 tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*buffer_);
             }
@@ -55,7 +63,9 @@ namespace automatic_parking {
             void set_docking_state(std::string new_docking_state);
 
         private:
+            rclcpp::Service<autodock_msgs::srv::Docking>::SharedPtr action_service;
             rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr vel_pub;
+            rclcpp::Publisher<autodock_msgs::msg::CurrentState>::SharedPtr state_pub;
             std::shared_ptr<tf2_ros::Buffer> buffer_;
             std::shared_ptr<tf2_ros::TransformListener> tf_listener_;
             geometry_msgs::msg::TransformStamped tf_odom ,tf_bot2dock, tf_dock2bot;
@@ -75,6 +85,11 @@ namespace automatic_parking {
             void receive_tf();
             void action_state_manage();
             void transform_filter(geometry_msgs::msg::TransformStamped &tf_);
+            void state_publish();
+            void handle_service(
+                const std::shared_ptr<rmw_request_id_t> request_header,
+                const std::shared_ptr<autodock_msgs::srv::Docking::Request> request,
+                std::shared_ptr<autodock_msgs::srv::Docking::Response>      response);
             std::string action_state , docking_state , last_docking_state , last_action_state, tag_frame;
             bool in_view;
             int tag_callback_counter, centering_counter, approach_counter, max_center_count, lost_tag_max, final_counter;

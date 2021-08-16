@@ -85,6 +85,12 @@ Step 2. Launch apriltag_docking
 ros2 launch apriltag_docking autodock_gazebo.launch.py open_rviz:=true
 ```
 
+Step 3. Send request to start docking
+
+```bash
+ros2 run apriltag_docking docking_client --ros-args -p docking:=start
+```
+
 ## Use Physical NeuronBot2 and RealSense D435
 
 Below instructions are only for users having a real NeuronBot2 with RealSense D435
@@ -99,4 +105,10 @@ Step 2. Launch apriltag_docking
 
 ```bash
 ros2 launch apriltag_docking autodock_neuronbot.launch.py open_rviz:=true
+```
+
+Step 3. Send request to start docking
+
+```bash
+ros2 run apriltag_docking docking_client --ros-args -p docking:=start
 ```

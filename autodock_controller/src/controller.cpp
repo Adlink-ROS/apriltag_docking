@@ -256,7 +256,8 @@ void autodock_controller::action_state_manage(){
     else{
        desire_angle = tune_angle;
     }
-    vel_pub->publish(cmd_vel_msg);
+
+    if (docking_state != "") vel_pub->publish(cmd_vel_msg);
 }
 
 void autodock_controller::tags_callback(){
@@ -335,13 +336,14 @@ void autodock_controller::run(){
     tags_callback();
     docking_state_manage();
     action_state_manage();
+    state_publish();
 }
 
 int main(int argc, char** argv){
     rclcpp::init(argc, argv);
     auto controller_node = std::make_shared<automatic_parking::autodock_controller>() ;
     rclcpp::Rate rate(30.0);
-    controller_node->set_docking_state("searching");
+    controller_node->set_docking_state("");
     while (rclcpp::ok()){
         controller_node->run();
         rclcpp::spin_some(controller_node);

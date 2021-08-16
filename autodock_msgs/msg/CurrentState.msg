@@ -1,0 +1,2 @@
+string docking_state
+string action_state
